@@ -113,8 +113,10 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 	private Vector<Vector<Object>> linesOpticalRecord; 
 	private int X_COMUS_OpticalRecord_ID;
 	private WDateEditor fDateTrx;
+	private ChangeBPartnerListener bpartnerListener;
 	
-	public WOpticalRecord() {
+	public WOpticalRecord(ChangeBPartnerListener bpartnerListener) {
+		this.bpartnerListener = bpartnerListener;
 		try {
 			zkInit();
 		} catch (Exception e) {
@@ -544,7 +546,6 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 		fBPartner.addValueChangeListener(this);
 		btnAdd.addEventListener(Events.ON_CLICK, this);
 		btnDelete.addEventListener(Events.ON_CLICK, this);
-		
 		return borderLayout;
 	}
 	
@@ -787,8 +788,10 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 	@Override
 	public void valueChange(ValueChangeEvent evt) {
 		if (evt.getSource().equals(fBPartner)) {
+			bpartnerListener.setBPartnerID((Integer)evt.getNewValue());
 			if (evt.getNewValue()!=null) {
 				int C_BPartner_ID = (int) evt.getNewValue();
+				
 				loadLstOpticalRecord(C_BPartner_ID);	
 			}
 		}
