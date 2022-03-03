@@ -132,6 +132,7 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 		
 		Center center = new Center();
 		center.appendChild(getPanelCenter());
+		center.setAutoscroll(true);
 		borderLayout .appendChild(center);
 		
 		West west = new West();
@@ -178,7 +179,6 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 		hLayout.appendChild(btnPrint);
 		
 		vLayout.appendChild(hLayout);
-			
 		vLayout.appendChild(getPanelDataInput());
 		
 		return vLayout;
