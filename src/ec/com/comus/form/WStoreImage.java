@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -23,8 +24,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import javax.swing.ImageIcon;
-
 import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.webui.component.Datebox;
 import org.adempiere.webui.component.Grid;
@@ -158,7 +157,7 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 		
 		West west = new West();
 		west.setSplittable(true);
-		west.setWidth("30%");
+		west.setWidth("20%");
 		mainLayout.appendChild(west);
 			Borderlayout layoutWest = new Borderlayout();
 			
@@ -175,8 +174,9 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 			
 			Row rowGridWestN = rowsGridWestN.newRow();
 			Div divBPartner = new Div();
-			rowGridWestN.appendCellChild(divBPartner,2);
+			
 
+			Label lblPartner = new Label(Msg.translate(ctx, "C_BPartner_ID"));
 			MLookup lookupBP = MLookupFactory.get(ctx, form.getWindowNo(), 0, 5433, DisplayType.Search);
 			bpartnerSearch = new WSearchEditor("C_BPartner_ID", true, false, true, lookupBP);
 			WEditorPopupMenu popupMenu = bpartnerSearch.getPopupMenu();
@@ -190,24 +190,46 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 				popupMenu.addContextElement((XulElement) bpartnerSearch.getComponent());
 	   				        				
 			}
+			
+			
 			divBPartner.appendChild(bpartnerSearch.getComponent());	
+			rowGridWestN.appendCellChild(lblPartner);
+			rowGridWestN = rowsGridWestN.newRow();
+			rowGridWestN.appendCellChild(divBPartner);
+			
+			
 			
 			rowGridWestN = rowsGridWestN.newRow();
-			rowGridWestN.appendCellChild(fDescriptionImagen,4);
+			Label lblDescription = new Label(Msg.translate(ctx, "Description"));
+			rowGridWestN.appendCellChild(lblDescription);
+			
+			rowGridWestN = rowsGridWestN.newRow();
+			fDescriptionImagen.setWidth("100%");
+			fDescriptionImagen.setReadonly(true);
+			rowGridWestN.appendCellChild(fDescriptionImagen);
+			
+			rowGridWestN = rowsGridWestN.newRow();
+			Label lblDate = new Label(Msg.getMsg(ctx, "Date"));
+			rowGridWestN.appendCellChild(lblDate);
 			
 			rowGridWestN = rowsGridWestN.newRow();
 			fDate = new Datebox();
-			rowGridWestN.appendCellChild(fDate,2);
+			fDate.setReadonly(true);
+			rowGridWestN.appendCellChild(fDate);
 			
+			rowGridWestN = rowsGridWestN.newRow();
 			btnAdd = new Button();
 			btnAdd.setImage(ThemeManager.getThemeResource("images/New16.png"));
 			btnAdd.setTooltiptext(Util.cleanAmp(Msg.getMsg(ctx, "Add")));
-			rowGridWestN.appendChild(btnAdd);
+//			rowGridWestN.appendChild(btnAdd);
 			
-			btnDelete = new Button();
+			btnDelete =  new Button();
 			btnDelete.setImage(ThemeManager.getThemeResource("images/Delete16.png"));
 			btnDelete.setTooltiptext(Util.cleanAmp(Msg.getMsg(ctx, "Delete")));
-			rowGridWestN.appendChild(btnDelete);
+			Div divButton = new Div();
+			divButton.appendChild(btnAdd);
+			divButton.appendChild(btnDelete);
+			rowGridWestN.appendChild(divButton); 
 			
 			Center centerW = new Center();
 			layoutWest.appendChild(centerW);
@@ -588,18 +610,7 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 			if (fDate.getValue()==null)
 				Messagebox.show("Ingrese una fecha");
 			else{
-				String format = "yyyyMMdd";
-				SimpleDateFormat sdf = new SimpleDateFormat(format);
-				String time = sdf.format(fDate.getValue().getTime());
-				time = time.concat("-").concat(fDescriptionImagen.getValue());
-				File newFolder = new File(folderPartner.getAbsolutePath()+"/"+time);
-				
-				if (newFolder.exists())
-					Messagebox.show("Ya existe fecha y nombre del Paciente");
-				else{
-					newFolder.mkdir();
-					loadDateFolders();
-				}
+				createImageFolder();
 			}
 		}else if (event.getTarget().equals(btnDelete)){
 				deleteDateFolder();
@@ -639,6 +650,22 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 			}
 			
 		}
+	}
+
+	private void createImageFolder() {
+		String format = "yyyyMMdd";
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		String time = sdf.format(fDate.getValue().getTime());
+		time = time.concat("-").concat(fDescriptionImagen.getValue());
+		File newFolder = new File(folderPartner.getAbsolutePath()+"/"+time);
+		
+		if (newFolder.exists())
+			Messagebox.show("Ya existe fecha y nombre del Paciente");
+		else{
+			newFolder.mkdir();
+			loadDateFolders();
+		}
+		
 	}
 
 	public void setLblInfo(String value){
@@ -725,6 +752,31 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 	public void setBPartnerID(Integer C_BPartner_ID) {
 		bpartnerSearch.setValue(C_BPartner_ID);
 		loadPartnerFolders(C_BPartner_ID);
+		
+	}
+
+	@Override
+	public void setDate(Date date) {
+		fDate.setValue(date);
+		
+	}
+
+	@Override
+	public void setDescription(Object description) {
+		fDescriptionImagen.setValue((String) description);
+		
+	}
+
+	@Override
+	public void createNewFolder() {
+		createImageFolder();
+		
+	}
+
+	@Override
+	public void loadImagesFolder() {
+		loadDateFolders();
+		readImages("/tmp/");
 		
 	}
 	

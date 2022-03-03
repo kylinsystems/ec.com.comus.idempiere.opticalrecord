@@ -1,6 +1,7 @@
 package ec.com.comus.form;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -544,6 +545,8 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 		center.appendChild(lstControl);
 		
 		fBPartner.addValueChangeListener(this);
+		fDescription.addValueChangeListener(this);
+		fDate.addValueChangeListener(this);
 		btnAdd.addEventListener(Events.ON_CLICK, this);
 		btnDelete.addEventListener(Events.ON_CLICK, this);
 		return borderLayout;
@@ -588,6 +591,10 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 			if(fDescription.getValue()==null || "".equals(fDescription.getValue()))
 				throw new AdempiereException("Ingrese una Descripción");
 			fDateTrx.setValue(fDate.getValue());
+			
+			bpartnerListener.setDescription(fDescription.getValue());
+			bpartnerListener.setDate((Date) fDate.getValue());
+			bpartnerListener.createNewFolder();
 			
 		}else if (event.getTarget().equals(btnDelete)){
 			deleteOpticalRecord();
@@ -789,11 +796,16 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 	public void valueChange(ValueChangeEvent evt) {
 		if (evt.getSource().equals(fBPartner)) {
 			bpartnerListener.setBPartnerID((Integer)evt.getNewValue());
+			bpartnerListener.loadImagesFolder();
 			if (evt.getNewValue()!=null) {
 				int C_BPartner_ID = (int) evt.getNewValue();
 				
 				loadLstOpticalRecord(C_BPartner_ID);	
 			}
+		}else if (evt.getSource().equals(fDescription)) {
+			bpartnerListener.setDescription(evt.getNewValue());
+		}else if (evt.getSource().equals(fDate)) {
+			bpartnerListener.setDate((Date) evt.getNewValue());
 		}
 		
 	}
