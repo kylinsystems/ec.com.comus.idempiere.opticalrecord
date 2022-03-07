@@ -10,7 +10,7 @@ public interface ChangeBPartnerListener {
 
 	public abstract void setDescription(Object object);
 	
-	public abstract void createNewFolder();
+	public abstract void createNewFolderImages();
 	
 	public abstract void loadImagesFolder();
 

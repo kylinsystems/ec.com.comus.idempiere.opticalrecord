@@ -768,7 +768,7 @@ public class WStoreImage implements IFormController, ChangeBPartnerListener,Even
 	}
 
 	@Override
-	public void createNewFolder() {
+	public void createNewFolderImages() {
 		createImageFolder();
 		
 	}

@@ -594,7 +594,7 @@ public class WOpticalRecord implements IFormController,EventListener<Event>, Val
 			
 			bpartnerListener.setDescription(fDescription.getValue());
 			bpartnerListener.setDate((Date) fDate.getValue());
-			bpartnerListener.createNewFolder();
+			bpartnerListener.createNewFolderImages();
 			
 		}else if (event.getTarget().equals(btnDelete)){
 			deleteOpticalRecord();
